@@ -90,9 +90,13 @@ class MYADDON_OT_export_scene(bpy.types.Operator, bpy_extras.io_utils.ExportHelp
         rot.y = math.degrees(rot.y)
         rot.z = math.degrees(rot.z)
         
-        self.write_and_export(file, indent + "Trans(%f,%f,%f)" % (trans.x, trans.y, trans.z))
-        self.write_and_export(file, indent + "Rot(%f,%f,%f)" % (rot.x, rot.y, rot.z))
-        self.write_and_export(file, indent + "Scale(%f,%f,%f)" % (scale.x, scale.y, scale.z))
+        self.write_and_export(file, indent + "T (%f,%f,%f)" % (trans.x, trans.y, trans.z))
+        self.write_and_export(file, indent + "R (%f,%f,%f)" % (rot.x, rot.y, rot.z))
+        self.write_and_export(file, indent + "S (%f,%f,%f)" % (scale.x, scale.y, scale.z))
+
+        if "file_name" in object:
+            self.write_and_export(file, indent + "N %s" % object["file_name"])
+
         self.write_and_export(file, '')
 
         #子オブジェクトも同様に解析
@@ -109,6 +113,22 @@ class MYADDON_OT_export_scene(bpy.types.Operator, bpy_extras.io_utils.ExportHelp
         self.report({'INFO'}, "シーン情報をExportしました")
 
         return {'FINISHED'}
+
+class OBJECT_PT_file_name(bpy.types.Panel):
+    """オブジェクトのファイルネームパネル"""
+    bl_idname = "OBJECT_PT_file_name"
+    bl_label = "ファイルネーム"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "object"
+
+    def draw(self, context):
+        #パネルに項目を追加
+        if "file_name" in context.object:
+            self.layout.prop(context.object, '["file_name"]', text=self.bl_label)
+
+        else:
+            self.layout.operator(MYADDON_OT_add_filename.bl_idname, text="FileName追加", icon='ADD')
 
 #トップバーの拡張メニュー
 class TOPBAR_MT_my_menu(bpy.types.Menu):
@@ -131,13 +151,21 @@ class TOPBAR_MT_my_menu(bpy.types.Menu):
         #ID指定でサブメニューを追加
         self.layout.menu(TOPBAR_MT_my_menu.bl_idname)
 
+#オペレーター　カスタムプロパティ[filename]を追加
+class MYADDON_OT_add_filename(bpy.types.Operator):
+    bl_idname = "myaddon.myaddon_ot_add_filename"
+    bl_label = "FileName追加"
+    bl_description = "['file_name']カスタムプロパティを追加します"
+    bl_options = {'REGISTER', 'UNDO'}
 
-
+    def execute(self, context):
+        context.object["file_name"] = ""
+        return {'FINISHED'}
 
 
 
 #自作クラスまとめ
-classes = (MYADDON_OT_stretch_vertex, MYADDON_OT_create_ico_sphere, MYADDON_OT_export_scene, TOPBAR_MT_my_menu, )
+classes = (MYADDON_OT_stretch_vertex, MYADDON_OT_create_ico_sphere, MYADDON_OT_export_scene, MYADDON_OT_add_filename, TOPBAR_MT_my_menu, OBJECT_PT_file_name)
 
 #Menu描画関数
 def draw_menu_manual(self, context):
