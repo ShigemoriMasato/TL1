@@ -1,5 +1,6 @@
 import bpy
-from .test_class import MYADDON_OT_stretch_vertex, MYADDON_OT_create_ico_sphere, MYADDON_OT_export_scene
+from .test_class import MYADDON_OT_stretch_vertex, MYADDON_OT_create_ico_sphere
+from .export_scene import MYADDON_OT_export_scene
 
 #トップバーの拡張メニュー
 class TOPBAR_MT_my_menu(bpy.types.Menu):

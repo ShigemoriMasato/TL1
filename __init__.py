@@ -1,15 +1,11 @@
 import bpy
-import bpy_extras
-import math
-import mathutils
-import gpu
-import gpu_extras.batch
-import copy
 
-from .test_class import MYADDON_OT_stretch_vertex, MYADDON_OT_create_ico_sphere, MYADDON_OT_export_scene
+from .test_class import MYADDON_OT_stretch_vertex, MYADDON_OT_create_ico_sphere
+from .export_scene import MYADDON_OT_export_scene
 from .topbar import TOPBAR_MT_my_menu
 from .draw_collider import DrawCollider
 from .collider import MYADDON_OT_add_collider
+from .collider_pt import OBJECT_PT_collider
 
 #ブレンダーに登録するアドオン情報
 bl_info = {
@@ -37,7 +33,6 @@ class OBJECT_PT_file_name(bpy.types.Panel):
 
     def draw(self, context):
         #パネルに項目を追加
-        self.layout.operator(MYADDON_OT_add_collider.bl_idname, text="コライダー追加", icon='ADD')
         if "file_name" in context.object:
             self.layout.prop(context.object, '["file_name"]', text=self.bl_label)
 
@@ -59,7 +54,9 @@ class MYADDON_OT_add_filename(bpy.types.Operator):
 
 
 #自作クラスまとめ
-classes = (MYADDON_OT_stretch_vertex, MYADDON_OT_create_ico_sphere, MYADDON_OT_export_scene, MYADDON_OT_add_filename, TOPBAR_MT_my_menu, OBJECT_PT_file_name, MYADDON_OT_add_collider)
+classes = (MYADDON_OT_stretch_vertex, MYADDON_OT_create_ico_sphere, MYADDON_OT_export_scene, MYADDON_OT_add_filename,
+            TOPBAR_MT_my_menu, OBJECT_PT_file_name,
+              OBJECT_PT_collider, MYADDON_OT_add_collider)
 
 #Menu描画関数
 def draw_menu_manual(self, context):

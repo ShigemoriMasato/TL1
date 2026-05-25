@@ -2,6 +2,7 @@ import bpy
 import gpu
 import gpu_extras.batch
 import copy
+import mathutils
 
 class DrawCollider:
 
@@ -24,16 +25,22 @@ class DrawCollider:
             [+0.5,+0.5,+0.5]
         ]
 
-        size = [2,2,2]
-
         for object in bpy.context.scene.objects:
+
+            if "collider" not in object:
+                continue
+
+            center = mathutils.Vector(object["collider_center"])
+            size = mathutils.Vector(object["collider_size"])
+
             start = len(vertices["pos"])
 
             for offset in offsets:
-                pos = copy.copy(object.location)
+                pos = copy.copy(center)
                 pos.x += offset[0] * size[0]
                 pos.y += offset[1] * size[1]
                 pos.z += offset[2] * size[2]
+                pos = object.matrix_world @ pos
                 vertices["pos"].append(pos)
                 
                 indices.append((start + 0, start + 1))
